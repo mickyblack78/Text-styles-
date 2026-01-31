@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Picker - 50 Fonts</title>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }
+        h2 { color: #00ff66; text-align: center; }
+        .row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #333; gap: 20px; }
+        .num { color: #00ff66; font-weight: bold; min-width: 30px; }
+        .preview { flex-grow: 1; font-size: 24px; }
+        .plain { color: #888; font-size: 12px; }
+
+        /* Specific Styles */
+        .s1 { font-weight: 900; }
+        .s2 { text-decoration: underline wavy #00ff66; }
+        .s3 { font-weight: 100; opacity: 0.7; }
+        .s4 { font-style: italic; font-family: serif; }
+        .s5 { font-family: Impact, sans-serif; text-transform: uppercase; }
+        .s6 { font-family: 'Courier New', monospace; }
+        .s7 { font-family: Georgia, serif; }
+        .s8 { font-family: 'Brush Script MT', cursive; }
+        .s9 { font-variant: small-caps; letter-spacing: 2px; }
+        .s10 { border: 2px dashed #00ff66; padding: 5px; width: fit-content; }
+        .s11 { letter-spacing: 8px; font-weight: bold; }
+        .s12 { font-family: 'Times New Roman', serif; font-style: italic; }
+        .s13 { background: #fff; color: #000; padding: 2px 8px; font-weight: 900; }
+        .s14 { text-shadow: 3px 3px #00ff66; }
+        .s15 { font-family: 'Comic Sans MS', cursive; }
+        .s16 { font-family: Arial, sans-serif; font-weight: 300; letter-spacing: -1px; }
+        .s17 { font-family: 'Palatino', serif; }
+        .s18 { font-family: 'Copperplate', sans-serif; }
+        .s19 { text-decoration: underline; }
+        .s20 { text-decoration: line-through; color: #ff0000; }
+        .s21 { font-weight: 900; font-stretch: expanded; }
+        .s22 { font-family: 'Garamond', serif; }
+        .s23 { filter: blur(0.8px); }
+        .s24 { font-family: 'Verdana', sans-serif; font-weight: 900; color: #00ff66; }
+        .s25 { font-family: 'Trebuchet MS', sans-serif; }
+        .s26 { -webkit-text-stroke: 1px white; color: transparent; font-weight: 900; }
+        .s27 { font-family: 'Tahoma', sans-serif; }
+        .s28 { font-family: cursive; font-size: 28px; }
+        .s29 { font-family: 'Old English Text MT', serif; font-size: 30px; }
+        .s30 { background: #ffff00; color: #000; padding: 0 5px; }
+        .s31 { font-family: 'Lucida Console', monospace; font-size: 18px; }
+        .s32 { font-size: 35px; font-weight: 100; line-height: 1; }
+        .s33 { transform: skewX(-15deg); display: inline-block; }
+        .s34 { text-transform: uppercase; border-left: 5px solid #00ff66; padding-left: 10px; }
+        .s35 { font-family: 'Baskerville', serif; }
+        .s36 { font-weight: 950; font-size: 28px; }
+        .s37 { transform: scaleY(1.5); display: inline-block; }
+        .s38 { font-family: Helvetica, sans-serif; font-weight: bold; }
+        .s39 { opacity: 0.5; }
+        .s40 { font-family: 'Segoe UI', sans-serif; font-weight: 200; }
+        .s41 { font-family: 'Arial Narrow', sans-serif; font-weight: bold; }
+        .s42 { text-decoration: overline #00ff66; }
+        .s43 { font-family: 'Rockwell', serif; font-weight: bold; }
+        .s44 { font-family: 'Marker Felt', sans-serif; }
+        .s45 { border: 1px solid white; padding: 4px; border-radius: 0; }
+        .s46 { font-variant: gothic; }
+        .s47 { transform: scaleX(0.7); display: inline-block; origin: left; }
+        .s48 { font-family: 'Arial Black', sans-serif; }
+        .s49 { font-style: italic; opacity: 0.4; }
+        .s50 { font-family: 'Consolas', monospace; color: #00ff66; }
+    </style>
+</head>
+<body>
+
+<h2>PICK YOUR 12 STYLES</h2>
+<p style="text-align:center; color: #888;">Scroll down. Tell me the numbers you like.</p>
+
+<div id="list"></div>
+
+<script>
+    const styles = [
+        "Bold", "Zig-Zag", "Light", "Italic", "Impact", "Monospace", "Serif", "Script", "Small-Caps", "Stencil",
+        "Wide", "Typewriter", "Block", "Shadow", "Playful", "Modern", "Elegant", "Retro", "Underline", "Strike",
+        "Heavy", "Antique", "Soft", "Future", "Journal", "Outline", "Clean", "Cursive", "Gothic", "Highlight",
+        "Terminal", "Display", "Oblique", "Title", "Book", "X-Bold", "Tall", "Geometric", "Vintage", "Fine",
+        "Grotesque", "Overline", "Slab", "Marker", "Square", "Stylized", "Narrow", "Solid", "Whisper", "Tech"
+    ];
+
+    const container = document.getElementById('list');
+    styles.forEach((name, i) => {
+        const div = document.createElement('div');
+        div.className = 'row';
+        div.innerHTML = `
+            <div class="num">${i + 1}</div>
+            <div class="preview s${i + 1}">${name}</div>
+            <div class="plain">(${name})</div>
+        `;
+        container.appendChild(div);
+    });
+</script>
+
+</body>
+</html>
