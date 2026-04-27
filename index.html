@@ -331,8 +331,10 @@ function move(e) {
   const p = getCoords(e);
   tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
   if (state.mode === 'draw') {
+    state.currentPath.push({x: p.x, y: p.y}); // <--- ADD THIS LINE
     mctx.lineTo(p.x, p.y);
     mctx.stroke();
+  }
   } else if (state.mode === 'paste' && state.sticker) {
     state.stickerX = p.x - state.anchorX;
     state.stickerY = p.y - state.anchorY;
