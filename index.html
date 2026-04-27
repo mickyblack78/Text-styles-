@@ -230,6 +230,21 @@ canvas {
 </div>
 
 <script>
+   const state = {
+  mode: 'draw',
+  drawing: false,
+  locked: false,
+  sticker: null,
+  stickerX: 100,
+  stickerY: 100,
+  anchorX: 0,
+  anchorY: 0,
+  history: [],
+  limit: 25,
+  dpr: window.devicePixelRatio || 1,
+  color: '#00ffff',
+  weight: 2
+};
    
 function loadSticker(url) {
   const img = new Image();
@@ -250,21 +265,8 @@ const tempCanvas = document.getElementById('temp-canvas');
 const mctx = mainCanvas.getContext('2d', { willReadFrequently: true });
 const tctx = tempCanvas.getContext('2d', { willReadFrequently: true });
 
-const state = {
-  mode: 'draw',
-  drawing: false,
-  locked: false,
-  sticker: null,
-  stickerX: 100,
-  stickerY: 100,
-  anchorX: 0,
-  anchorY: 0,
-  history: [],
-  limit: 25,
-  dpr: window.devicePixelRatio || 1,
-  color: '#00ffff',
-  weight: 2
-};
+
+  
 
 let bridgeOrigin = { x: 0, y: 0 };
 
