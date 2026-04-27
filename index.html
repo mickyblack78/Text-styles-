@@ -347,6 +347,9 @@ function move(e) {
     tctx.lineTo(p.x, p.y);
     tctx.stroke();
   }
+}
+
+   
 function end() {
   if (!state.drawing) return;
   if (state.mode === 'bridge' || state.mode === 'paste') {
