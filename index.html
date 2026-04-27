@@ -230,6 +230,20 @@ canvas {
 </div>
 
 <script>
+   
+function loadSticker(url) {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = () => {
+    state.sticker = img;
+    state.stickerX = 100;
+    state.stickerY = 100;
+    console.log("STICKER_LOADED");
+  };
+  img.src = url;
+}
+
+loadSticker('https://api.dicebear.com/7.x/identicon/svg?seed=arch');
 
 const mainCanvas = document.getElementById('main-canvas');
 const tempCanvas = document.getElementById('temp-canvas');
