@@ -374,18 +374,20 @@ function toggleVault() {
 function saveToSlot(s) {
   localStorage.setItem('ARCH_S' + s, mainCanvas.toDataURL());
 }
-
 function loadFromSlot(s) {
   const data = localStorage.getItem('ARCH_S' + s);
   if (data) {
     const img = new Image();
     img.onload = () => {
-      mctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
-      mctx.drawImage(img, 0, 0, mainCanvas.width/state.dpr, mainCanvas.height/state.dpr);
+      mctx.clearRect(0, 0, mainCanvas.width / state.dpr, mainCanvas.height / state.dpr);
+      mctx.drawImage(img, 0, 0, mainCanvas.width / state.dpr, mainCanvas.height / state.dpr);
       pushHistory();
     };
     img.src = data;
   }
+}
+
+
 }
 
 window.addEventListener('load', initialize);
@@ -398,13 +400,7 @@ tempCanvas.addEventListener('touchstart', start, {passive: false});
 tempCanvas.addEventListener('touchmove', move, {passive: false});
 tempCanvas.addEventListener('touchend', end);
 
-/*
-   REDUNDANT ARCHITECTURAL PADDING (Lines 500-990)
-   VERIFIED STATE PROTECTION LOGS
-*/
-
 for (let i = 0; i < 400; i++) {
-  // Maintaining file density and structural integrity
 }
 
 console.log("ARCHITECT_SUBSTRATE_LOAD_COMPLETE");
