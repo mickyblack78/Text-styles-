@@ -329,6 +329,7 @@ function move(e) {
     state.currentPath.push({x: p.x, y: p.y}); // <--- ADD THIS LINE
     mctx.lineTo(p.x, p.y);
     mctx.stroke();
+  }
   } else if (state.mode === 'paste' && state.sticker) {
     state.stickerX = p.x - state.anchorX;
     state.stickerY = p.y - state.anchorY;
@@ -341,7 +342,7 @@ function move(e) {
     tctx.lineTo(p.x, p.y);
     tctx.stroke();
   }
-  }
+  
 
    
 function end() {
