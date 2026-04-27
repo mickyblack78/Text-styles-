@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>ARCHITECT_990_STRICT_SUBSTRATE</title>
 <style>
-/* ARCHITECTURAL CSS - VERTICAL EXPANSION 
-   (Lines 1-200)
-*/
 
 :root {
   --neon-cyan: #00ffff;
@@ -266,8 +263,6 @@ const mctx = mainCanvas.getContext('2d', { willReadFrequently: true });
 const tctx = tempCanvas.getContext('2d', { willReadFrequently: true });
 
 
-  
-
 let bridgeOrigin = { x: 0, y: 0 };
 
 function initialize() {
@@ -382,7 +377,6 @@ function end() {
   
   mctx.stroke();
   
-  // Switch brush back to "Normal" mode
   mctx.globalCompositeOperation = 'source-over';
    }
 
