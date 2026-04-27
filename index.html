@@ -329,14 +329,13 @@ function move(e) {
     state.currentPath.push({x: p.x, y: p.y}); // <--- ADD THIS LINE
     mctx.lineTo(p.x, p.y);
     mctx.stroke();
-  }
-  } else if (state.mode === 'paste' && state.sticker) {
+    else if (state.mode === 'paste' && state.sticker) {
     state.stickerX = p.x - state.anchorX;
     state.stickerY = p.y - state.anchorY;
     tctx.globalAlpha = 0.5;
     tctx.drawImage(state.sticker, state.stickerX, state.stickerY);
     tctx.globalAlpha = 1.0;
-  } else if (state.mode === 'bridge') {
+    else if (state.mode === 'bridge') {
     tctx.beginPath();
     tctx.moveTo(bridgeOrigin.x, bridgeOrigin.y);
     tctx.lineTo(p.x, p.y);
@@ -403,7 +402,6 @@ function loadFromSlot(s) {
     state.pathHistory = data.paths || [];
   };
   img.src = data.img;
-   }
 }
 
 window.addEventListener('load', initialize);
