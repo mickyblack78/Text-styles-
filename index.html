@@ -330,8 +330,7 @@ function start(e) {
 function move(e) {
   if (!state.drawing) return;
   const p = getCoords(e);
-  tctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
-   tempCanvas.width / state.dpr
+  tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
   if (state.mode === 'draw') {
     mctx.lineTo(p.x, p.y);
     mctx.stroke();
@@ -342,13 +341,12 @@ function move(e) {
     tctx.drawImage(state.sticker, state.stickerX, state.stickerY);
     tctx.globalAlpha = 1.0;
   } else if (state.mode === 'bridge') {
-    tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr); // Clear using scaled coords
     tctx.beginPath();
     tctx.moveTo(bridgeOrigin.x, bridgeOrigin.y);
     tctx.lineTo(p.x, p.y);
     tctx.stroke();
   }
-}
+  }
 
    
 function end() {
