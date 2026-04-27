@@ -353,10 +353,13 @@ function move(e) {
 function end() {
   if (!state.drawing) return;
   if (state.mode === 'bridge' || state.mode === 'paste') {
-    // Bake the temp canvas into the main canvas at the correct scale
     mctx.drawImage(tempCanvas, 0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
   }
+  if (state.mode === 'draw') {
+    state.pathHistory.push([...state.currentPath]);
+  }
   state.drawing = false;
+  state.currentPath = [];
   tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
 }
 
