@@ -345,9 +345,6 @@ function move(e) {
     tctx.lineTo(p.x, p.y);
     tctx.stroke();
   }
-// ...
-
-// REPLACED: Updated end() function for correct resolution baking
 function end() {
   if (!state.drawing) return;
   if (state.mode === 'bridge' || state.mode === 'paste') {
