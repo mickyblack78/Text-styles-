@@ -363,6 +363,29 @@ function end() {
   tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
 }
 
+   function executeUndo() {
+  if (state.pathHistory.length === 0) return;
+  
+  // Get the last line
+  const lastPath = state.pathHistory.pop();
+  
+  // Switch brush to "Eraser" mode
+  mctx.globalCompositeOperation = 'destination-out';
+  mctx.beginPath();
+  mctx.lineWidth = state.weight + 2; // Slightly wider to ensure it clears the glow
+  
+  // Re-trace the line to carve it out
+  lastPath.forEach((p, i) => {
+    if (i === 0) mctx.moveTo(p.x, p.y);
+    else mctx.lineTo(p.x, p.y);
+  });
+  
+  mctx.stroke();
+  
+  // Switch brush back to "Normal" mode
+  mctx.globalCompositeOperation = 'source-over';
+   }
+
 function toggleVault() {
   document.getElementById('vault-system').classList.toggle('active');
 }
