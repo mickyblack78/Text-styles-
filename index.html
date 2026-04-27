@@ -331,6 +331,7 @@ function move(e) {
   if (!state.drawing) return;
   const p = getCoords(e);
   tctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+   tempCanvas.width / state.dpr
   if (state.mode === 'draw') {
     mctx.lineTo(p.x, p.y);
     mctx.stroke();
