@@ -332,28 +332,30 @@ function move(e) {
   if (state.mode === 'draw') {
     mctx.lineTo(p.x, p.y);
     mctx.stroke();
-  } else if (state.mode === 'bridge') {
-    tctx.drawImage(mainCanvas, 0, 0, mainCanvas.width/state.dpr, mainCanvas.height/state.dpr);
-    tctx.beginPath();
-    tctx.moveTo(bridgeOrigin.x, bridgeOrigin.y);
-    tctx.lineTo(p.x, p.y);
-    tctx.stroke();
   } else if (state.mode === 'paste' && state.sticker) {
     state.stickerX = p.x - state.anchorX;
     state.stickerY = p.y - state.anchorY;
     tctx.globalAlpha = 0.5;
     tctx.drawImage(state.sticker, state.stickerX, state.stickerY);
     tctx.globalAlpha = 1.0;
+  } else if (state.mode === 'bridge') {
+    tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr); // Clear using scaled coords
+    tctx.beginPath();
+    tctx.moveTo(bridgeOrigin.x, bridgeOrigin.y);
+    tctx.lineTo(p.x, p.y);
+    tctx.stroke();
   }
-}
+// ...
 
+// REPLACED: Updated end() function for correct resolution baking
 function end() {
   if (!state.drawing) return;
-  if (state.mode === 'bridge') {
-    mctx.drawImage(tempCanvas, 0, 0, mainCanvas.width/state.dpr, mainCanvas.height/state.dpr);
+  if (state.mode === 'bridge' || state.mode === 'paste') {
+    // Bake the temp canvas into the main canvas at the correct scale
+    mctx.drawImage(tempCanvas, 0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
   }
   state.drawing = false;
-  tctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+  tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
   pushHistory();
 }
 
