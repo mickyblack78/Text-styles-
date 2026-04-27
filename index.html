@@ -391,10 +391,25 @@ function toggleVault() {
 }
 
 function saveToSlot(s) {
-  
+  const data = {
+    img: mainCanvas.toDataURL(),
+    paths: state.pathHistory
+  };
+  localStorage.setItem('ARCH_S' + s, JSON.stringify(data));
+}
+
 function loadFromSlot(s) {
-  
-  }
+  const raw = localStorage.getItem('ARCH_S' + s);
+  if (!raw) return;
+  const data = JSON.parse(raw);
+  const img = new Image();
+  img.onload = () => {
+    mctx.clearRect(0, 0, mainCanvas.width / state.dpr, mainCanvas.height / state.dpr);
+    mctx.drawImage(img, 0, 0, mainCanvas.width / state.dpr, mainCanvas.height / state.dpr);
+    state.pathHistory = data.paths || [];
+  };
+  img.src = data.img;
+   }
 }
 
 window.addEventListener('load', initialize);
