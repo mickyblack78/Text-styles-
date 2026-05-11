@@ -1,424 +1,465 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>ARCHITECT</title>
-<style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ARCHITECT_101</title>
+    <style>
+        :root {
+            --neon-cyan: #00ffff;
+            --electric-blue: #2e5bff;
+            --neon-glow: rgba(0, 255, 255, 0.4);
+            --bg: #000000;
+            --panel: rgba(10, 10, 10, 0.98);
+            --safe-zone: 60px;
+            --top-padding: 40px; 
+            --bottom-padding: 160px; 
+        }
 
-:root {
-  --neon-cyan: #00ffff;
-  --neon-glow: rgba(0, 255, 255, 0.4);
-  --deep-bg: #050505;
-  --panel-bg: rgba(10, 10, 10, 0.98);
-  --border-dim: #222222;
-  --text-main: #ffffff;
-  --text-dim: #666666;
-}
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-touch-callout: none; -webkit-user-select: none;
+            user-select: none; touch-action: none;
+        }
 
-* {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  margin-left: 0px;
-  margin-right: 0px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  padding-left: 0px;
-  padding-right: 0px;
-  box-sizing: border-box;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-}
+        body { 
+            background: var(--bg); 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; 
+            font-family: monospace; 
+        }
 
-html {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+        #canvas-wrap { 
+            position: absolute; 
+            top: var(--top-padding); 
+            left: 0; 
+            width: 100%; 
+            height: calc(100% - var(--top-padding) - var(--bottom-padding)); 
+            z-index: 1;
+            background: #050505; 
+        }
 
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: var(--deep-bg);
-  font-family: 'Courier New', Courier, monospace;
-  position: fixed;
-  top: 0;
-  left: 0;
-}
+        canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            display: block;
+        }
+        #main-canvas { z-index: 10; }
+        #temp-canvas { z-index: 20; }
 
-#canvas-container {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-  display: block;
-  overflow: hidden;
-}
+        .dock {
+            position: fixed; bottom: var(--safe-zone); left: 50%;
+            transform: translateX(-50%); z-index: 1000;
+            display: flex; gap: 15px; padding: 15px 25px;
+            background: var(--panel); border: 1px solid var(--neon-cyan);
+            border-radius: 60px; box-shadow: 0 0 25px var(--neon-glow);
+        }
 
-canvas {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: block;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
-  touch-action: none; 
-}
+        .btn {
+            width: 65px; height: 50px; border-radius: 25px;
+            border: 1px solid #333; background: #000;
+            display: flex; align-items: center; justify-content: center;
+            color: #666; font-size: 11px; font-weight: 900; transition: 0.2s;
+            cursor: pointer;
+        }
 
-#main-canvas {
-  z-index: 10;
-}
+        /* DYNAMIC STATES */
+        .btn.active { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-glow); }
+        .btn.qsave-active { border-color: var(--electric-blue) !important; color: var(--electric-blue) !important; box-shadow: 0 0 25px var(--electric-blue) !important; }
+        .btn.locked { opacity: 0.3; pointer-events: none; }
 
-#temp-canvas {
-  z-index: 20;
-  pointer-events: auto;
-}
+        /* OVERLAYS */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 2000; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
 
-.architect-dock {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  padding-left: 25px;
-  padding-right: 25px;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: var(--panel-bg);
-  border-top-width: 1px;
-  border-top-style: solid;
-  border-top-color: var(--neon-cyan);
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: var(--neon-cyan);
-  border-left-width: 1px;
-  border-left-style: solid;
-  border-left-color: var(--neon-cyan);
-  border-right-width: 1px;
-  border-right-style: solid;
-  border-right-color: var(--neon-cyan);
-  border-top-left-radius: 60px;
-  border-top-right-radius: 60px;
-  border-bottom-left-radius: 60px;
-  border-bottom-right-radius: 60px;
-  box-shadow: 0px 0px 25px var(--neon-glow);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  transition-property: transform, bottom;
-  transition-duration: 0.4s;
-  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
-}
+        /* 3x5 GRID */
+        .grid-3x5 {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 15px; width: 90%; max-width: 400px;
+        }
 
-.tool-button {
-  width: 55px;
-  height: 55px;
-  border-top-left-radius: 50%;
-  border-top-right-radius: 50%;
-  border-bottom-left-radius: 50%;
-  border-bottom-right-radius: 50%;
-  background-color: #111111;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #333333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
+        .grid-btn {
+            aspect-ratio: 1; background: #111; border: 1px solid #333;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 10px; text-align: center; cursor: pointer;
+        }
+        .grid-btn:active { background: var(--neon-cyan); color: #000; }
 
-.tool-button span {
-  color: var(--text-dim);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 1px;
-}
+        /* MENU LIST */
+        .menu-list { width: 80%; max-width: 300px; display: flex; flex-direction: column; gap: 10px; }
+        .menu-row { display: flex; gap: 10px; width: 100%; }
+        .menu-item { 
+            flex: 1; padding: 20px; background: #111; border: 1px solid #444; 
+            color: white; text-align: center; font-size: 12px; cursor: pointer;
+        }
 
-.tool-button.active {
-  border-color: var(--neon-cyan);
-  background-color: #000000;
-  box-shadow: 0px 0px 12px var(--neon-glow);
-}
+        /* VAULT DISPLAY */
+        .vault-stack { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .vault-box {
+            width: 80mm; height: 80mm; border: 1px solid #333;
+            background: #050505; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .vault-box.active-v { border-color: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-glow); }
+        .vault-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .vault-label { position: absolute; top: 5px; left: 5px; font-size: 8px; color: #555; }
 
-.tool-button.active span {
-  color: var(--neon-cyan);
-}
+        /* UNIVERSAL VAULT MENU */
+        .vault-menu { display: flex; gap: 10px; margin-top: 15px; width: 80mm; }
+        .v-btn { flex: 1; padding: 10px; font-size: 10px; background: #111; border: 1px solid #444; color: white; text-align: center; cursor: pointer;}
+        .v-delete { color: #ff0000; }
+        .v-delete.flash { animation: flashRed 0.5s infinite; }
 
-.vault-overlay {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.85);
-  width: 90%;
-  max-width: 400px;
-  background-color: var(--panel-bg);
-  border: 2px solid var(--neon-cyan);
-  padding: 40px;
-  z-index: 5000;
-  display: none;
-  opacity: 0;
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.vault-overlay.active {
-  display: block;
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.vault-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.vault-slot {
-  background-color: #000000;
-  border: 1px solid #222222;
-  padding: 20px;
-  text-align: center;
-}
-
-.v-spacer { height: 20px; }
-
-</style>
+        @keyframes flashRed { 0% { background: #000; } 50% { background: #600; } 100% { background: #000; } }
+    </style>
 </head>
 <body>
 
-<div id="canvas-container">
-  <canvas id="main-canvas"></canvas>
-  <canvas id="temp-canvas"></canvas>
+<div id="canvas-wrap">
+    <canvas id="main-canvas"></canvas>
+    <canvas id="temp-canvas"></canvas>
 </div>
 
-<div class="architect-dock" id="ui-dock">
-  <div class="tool-button active" id="btn-draw" onclick="setMode('draw')"><span>DRAW</span></div>
-  <div class="tool-button" id="btn-bridge" onclick="setMode('bridge')"><span>BRDG</span></div>
-  <div class="tool-button" id="btn-paste" onclick="setMode('paste')"><span>PST</span></div>
-  <div class="tool-button" onclick="executeUndo()"><span>UNDO</span></div>
-  <div class="tool-button" onclick="toggleVault()"><span>VLT</span></div>
+<!-- THE 4 MAIN BUTTONS -->
+<div class="dock" id="main-dock">
+    <div class="btn" id="btn-menu" onclick="toggleOverlay('menu')">PEN</div>
+    <div class="btn" id="btn-qsave" onclick="triggerQSave()">QSAVE</div>
+    <div class="btn" id="btn-color" onclick="handleColorTap()">COLOR</div>
+    <div class="btn" id="btn-edit" onclick="toggleEdit()">EDIT</div>
 </div>
 
-<div class="vault-overlay" id="vault-system">
-  <div class="vault-grid">
-    <div class="vault-slot" onclick="saveToSlot(1)">SAVE_1</div>
-    <div class="vault-slot" onclick="loadFromSlot(1)">LOAD_1</div>
-    <div class="vault-slot" onclick="saveToSlot(2)">SAVE_2</div>
-    <div class="vault-slot" onclick="loadFromSlot(2)">LOAD_2</div>
-  </div>
-  <div class="v-spacer"></div>
-  <button onclick="toggleVault()" style="width:100%; padding:15px; background:none; border:1px solid var(--neon-cyan); color:var(--neon-cyan);">EXIT</button>
+<!-- MENUS & OVERLAYS -->
+<div class="overlay" id="overlay-menu">
+    <div class="menu-list">
+        <div class="menu-row">
+            <div class="menu-item">SAVE</div>
+            <div class="menu-item">SAVE AS</div>
+        </div>
+        <div class="menu-row">
+            <div class="menu-item">LOAD</div>
+            <div class="menu-item">IMPORT</div>
+        </div>
+        <div class="menu-item" style="background: var(--neon-cyan); color: #000;" onclick="switchOverlay('menu', 'tools')">TOOLS</div>
+        <div class="menu-item" onclick="switchOverlay('menu', 'vault')">VAULTS</div>
+    </div>
+</div>
+
+<div class="overlay" id="overlay-vault">
+    <div class="vault-stack">
+        <div class="vault-box" id="box-qsave" onclick="focusVault('qsave')">
+            <span class="vault-label">QSAVE_SLOT</span>
+            <img id="img-qsave-v" src="" alt="">
+        </div>
+        <div class="vault-box" id="box-save" onclick="focusVault('save')">
+            <span class="vault-label">SAVE_VAULT</span>
+            <img id="img-save-v" src="" alt="">
+        </div>
+        <div class="vault-menu">
+            <div class="v-btn" onclick="vaultAction('EDIT')">EDIT</div>
+            <div class="v-btn" onclick="vaultAction('SAVEAS')">SAVE AS</div>
+            <div class="v-btn v-delete" id="v-del-btn" onclick="vaultAction('DELETE')">DELETE</div>
+        </div>
+        <div class="v-btn" style="width: 80mm; margin-top:10px;" onclick="switchOverlay('vault', 'menu')">BACK</div>
+    </div>
+</div>
+
+<div class="overlay" id="overlay-tools">
+    <div class="grid-3x5">
+        <div class="grid-btn" onclick="applyTool('STICKER')">STICKER</div>
+        <div class="grid-btn" onclick="applyTool('UNDO')">UNDO</div>
+        <div class="grid-btn" onclick="applyTool('SMOOTH')">SMOOTH</div>
+        <div class="grid-btn" onclick="applyTool('TEXT')">TEXT</div>
+        <div class="grid-btn" onclick="applyTool('EFFECTS')">EFFECTS</div>
+        <div class="grid-btn" onclick="applyTool('ERASER')">ERASER</div>
+        <div class="grid-btn" onclick="applyTool('CUT')">CUT</div>
+        <div class="grid-btn" onclick="applyTool('COPY')">COPY</div>
+        <div class="grid-btn" onclick="applyTool('PASTE')">PASTE</div>
+        <div class="grid-btn" onclick="applyTool('FILL')">FILL</div>
+        <div class="grid-btn" onclick="applyTool('PICKER')">PICKER</div>
+        <div class="grid-btn" onclick="applyTool('PH...AI')">PH...AI</div>
+        <div class="grid-btn" onclick="applyTool('PH_13')">PH_13</div>
+        <div class="grid-btn" onclick="applyTool('PH_14')">PH_14</div>
+        <div class="grid-btn" onclick="applyTool('PH_15')">PH_15</div>
+    </div>
+</div>
+
+<div class="overlay" id="overlay-color" style="background: none; pointer-events: none;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 20px; pointer-events: auto; margin-bottom: 20px;">
+        <div id="brush-preview" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #fff;"></div>
+        <button id="gear-shifter" onclick="cycleGear()" style="background: #111; color: #0ff; border: 1px solid #0ff; padding: 10px; border-radius: 5px;">GEAR: 50</button>
+    </div>
+    <div class="bar-container" id="bar1-container" style="position: relative; height: 60px; width: 90%; pointer-events: auto; margin-bottom: 20px;">
+        <div id="bar1-bg" style="position: absolute; top: 25px; width: 100%; height: 8px; background: linear-gradient(to right, red, yellow, green, cyan, blue, magenta, red); border-radius: 4px;"></div>
+        <div id="loupe1" style="position: absolute; width: 15mm; height: 15mm; border-radius: 50%; border: 3px solid white; top: 0px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; background: #888;">2000</div>
+    </div>
+    <div class="bar-container" id="bar2-container" style="position: relative; height: 60px; width: 90%; pointer-events: auto;">
+        <div id="bar2-bg" style="position: absolute; top: 25px; width: 100%; height: 8px; background: linear-gradient(to right, #222, #0ff); border-radius: 4px;"></div>
+        <div id="loupe2" style="position: absolute; width: 15mm; height: 15mm; border-radius: 50%; border: 3px solid white; top: 0px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; background: #888;">2000</div>
+    </div>
 </div>
 
 <script>
-   const state = {
-  mode: 'draw',
-  drawing: false,
-  locked: false,
-  sticker: null,
-  stickerX: 100,
-  stickerY: 100,
-  anchorX: 0,
-  anchorY: 0,
-  pathHistory: [],
-  currentPath: [],
-  dpr: window.devicePixelRatio || 1,
-  color: '#00ffff',
-  weight: 2
-};
-   
-function loadSticker(url) {
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.onload = () => {
-    state.sticker = img;
-    state.stickerX = 100;
-    state.stickerY = 100;
-    console.log("STICKER_LOADED");
-  };
-  img.src = url;
-}
+    const appState = {
+        activeOverlay: null,
+        isEditing: false,
+        activeTool: 'PEN',
+        projectName: 'PROJECT',
+        penColor: '#00ffff',
+        penSize: 20,
+        penShade: 50,
+        penHue: 180,
+        penElectric: 100, // Added to fix the electric gradient logic
+        h: 2000, 
+        t: 2000, 
+        e: 20,
+        gears:[1, 5, 10, 50, 100, 200, 500],
+        gearIdx: 3,
+        gear: 50,
+        bar1Mode: 'HUE',
+        bar2Mode: 'ELECTRIC',
+        ledger:[],
+        focusedVault: 'qsave',
+        isRelaying: false,
+        dpr: window.devicePixelRatio || 1,
+        slot_qsave: null,
+        slot_vault: null
+    };
 
-loadSticker('https://api.dicebear.com/7.x/identicon/svg?seed=arch');
+    const main = document.getElementById('main-canvas');
+    const temp = document.getElementById('temp-canvas');
+    const mctx = main.getContext('2d');
+    const tctx = temp.getContext('2d');
 
-const mainCanvas = document.getElementById('main-canvas');
-const tempCanvas = document.getElementById('temp-canvas');
-const mctx = mainCanvas.getContext('2d', { willReadFrequently: true });
-const tctx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    function init() {
+        main.width = temp.width = window.innerWidth * appState.dpr;
+        main.height = temp.height = window.innerHeight * appState.dpr;
+        main.style.width = temp.style.width = window.innerWidth + 'px';
+        main.style.height = temp.style.height = window.innerHeight + 'px';
+        mctx.scale(appState.dpr, appState.dpr);
+        tctx.scale(appState.dpr, appState.dpr);
+        updateMasterColor();
+    }
 
+    function toggleOverlay(id) {
+        // Slam shut other gates
+        if (appState.activeOverlay && appState.activeOverlay !== id && appState.activeOverlay !== 'tools') {
+            document.getElementById(`overlay-${appState.activeOverlay}`).style.display = 'none';
+            document.getElementById(`btn-${appState.activeOverlay}`)?.classList.remove('active');
+        }
 
-let bridgeOrigin = { x: 0, y: 0 };
+        if ((id === 'color' || id === 'menu') && appState.isEditing) return;
 
-function initialize() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  mainCanvas.width = tempCanvas.width = w * state.dpr;
-  mainCanvas.height = tempCanvas.height = h * state.dpr;
-  mainCanvas.style.width = tempCanvas.style.width = w + 'px';
-  mainCanvas.style.height = tempCanvas.style.height = h + 'px';
-  mctx.scale(state.dpr, state.dpr);
-  tctx.scale(state.dpr, state.dpr);
-  mctx.lineCap = tctx.lineCap = 'round';
-  mctx.lineJoin = tctx.lineJoin = 'round';
-  mctx.strokeStyle = tctx.strokeStyle = state.color;
-  mctx.lineWidth = tctx.lineWidth = state.weight;
-}
+        const el = document.getElementById(`overlay-${id}`);
+        const btn = document.getElementById(`btn-${id}`);
 
-function getCoords(e) {
-  const t = e.touches[0];
-  const vv = window.visualViewport;
-  return {
-    x: (t.pageX - (vv ? vv.pageLeft : 0)) / (vv ? vv.scale : 1),
-    y: (t.pageY - (vv ? vv.pageTop : 0)) / (vv ? vv.scale : 1)
-  };
-}
+        if (appState.activeOverlay === id || (id === 'menu' && appState.activeOverlay === 'tools')) {
+            el.style.display = 'none';
+            if (id === 'menu') {
+                document.getElementById('overlay-tools').style.display = 'none';
+                btn.innerText = appState.activeTool; // Revert to tool name
+            }
+            btn.classList.remove('active');
+            appState.activeOverlay = null;
+        } else {
+            el.style.display = 'flex';
+            btn.classList.add('active');
+            appState.activeOverlay = id;
+        }
+    }
 
-function syncUI() {
-  const vv = window.visualViewport;
-  if (!vv) return;
-  const dock = document.getElementById('ui-dock');
-  const inv = 1 / vv.scale;
-  window.requestAnimationFrame(() => {
-    dock.style.transform = `translateX(-50%) scale(${inv})`;
-    dock.style.bottom = `${30 * inv}px`;
-  });
-}
+    function toggleEdit() {
+        if (appState.activeOverlay) return; 
+        appState.isEditing = !appState.isEditing;
+        document.getElementById('btn-edit').classList.toggle('active', appState.isEditing);
+    }
 
-function setMode(m) {
-  if (state.locked) return;
-  state.mode = m;
-  document.querySelectorAll('.tool-button').forEach(b => b.classList.remove('active'));
-  document.getElementById('btn-' + m).classList.add('active');
-}
+    function switchOverlay(from, to) {
+        document.getElementById(`overlay-${from}`).style.display = 'none';
+        document.getElementById(`overlay-${to}`).style.display = 'flex';
+        appState.activeOverlay = to;
+    }
 
-function start(e) {
-  if (e.target.closest('.architect-dock') || e.target.closest('.vault-overlay')) return;
-  const p = getCoords(e);
-  state.drawing = true;
-  if (state.mode === 'bridge') {
-    bridgeOrigin = { x: p.x, y: p.y };
-  } else if (state.mode === 'paste' && state.sticker) {
-    state.anchorX = p.x - state.stickerX;
-    state.anchorY = p.y - state.stickerY;
-  }
-  mctx.beginPath();
-  mctx.moveTo(p.x, p.y);
-}
+    function cycleGear() {
+        appState.gearIdx = (appState.gearIdx + 1) % appState.gears.length;
+        appState.gear = appState.gears[appState.gearIdx];
+        document.getElementById('gear-shifter').innerText = `GEAR: ${appState.gear}`;
+    }
 
-function move(e) {
-  if (!state.drawing) return;
-  const p = getCoords(e);
-  tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
-  if (state.mode === 'draw') {
-    state.currentPath.push({x: p.x, y: p.y}); // <--- ADD THIS LINE
-    mctx.lineTo(p.x, p.y);
-    mctx.stroke();
-  }
-  } else if (state.mode === 'paste' && state.sticker) {
-    state.stickerX = p.x - state.anchorX;
-    state.stickerY = p.y - state.anchorY;
-    tctx.globalAlpha = 0.5;
-    tctx.drawImage(state.sticker, state.stickerX, state.stickerY);
-    tctx.globalAlpha = 1.0;
-  } else if (state.mode === 'bridge') {
-    tctx.beginPath();
-    tctx.moveTo(bridgeOrigin.x, bridgeOrigin.y);
-    tctx.lineTo(p.x, p.y);
-    tctx.stroke();
-  }
-  
+    // Color Bar toggles
+    document.getElementById('bar1-container').addEventListener('dblclick', () => {
+        appState.bar1Mode = appState.bar1Mode === 'HUE' ? 'TONE' : 'HUE';
+        document.getElementById('bar1-bg').style.background = appState.bar1Mode === 'HUE' 
+            ? 'linear-gradient(to right, red, yellow, green, cyan, blue, magenta, red)' 
+            : 'linear-gradient(to right, #000, #888, #fff)';
+        updateMasterColor();
+    });
 
-   
-function end() {
-  if (!state.drawing) return;
-  if (state.mode === 'bridge' || state.mode === 'paste') {
-    mctx.drawImage(tempCanvas, 0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
-  }
-  if (state.mode === 'draw') {
-    state.pathHistory.push([...state.currentPath]);
-  }
-  state.drawing = false;
-  state.currentPath = [];
-  tctx.clearRect(0, 0, tempCanvas.width / state.dpr, tempCanvas.height / state.dpr);
-}
+    document.getElementById('bar2-container').addEventListener('dblclick', () => {
+        appState.bar2Mode = appState.bar2Mode === 'ELECTRIC' ? 'STROKE' : 'ELECTRIC';
+        document.getElementById('bar2-bg').style.background = appState.bar2Mode === 'ELECTRIC'
+            ? 'linear-gradient(to right, #111, #0ff)' 
+            : 'linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,1))';
+        updateMasterColor();
+    });
 
-   function executeUndo() {
-  if (state.pathHistory.length === 0) return;
-  
-  // Get the last line
-  const lastPath = state.pathHistory.pop();
-  
-  // Switch brush to "Eraser" mode
-  mctx.globalCompositeOperation = 'destination-out';
-  mctx.beginPath();
-  mctx.lineWidth = state.weight + 2; // Slightly wider to ensure it clears the glow
-  
-  // Re-trace the line to carve it out
-  lastPath.forEach((p, i) => {
-    if (i === 0) mctx.moveTo(p.x, p.y);
-    else mctx.lineTo(p.x, p.y);
-  });
-  
-  mctx.stroke();
-  
-  mctx.globalCompositeOperation = 'source-over';
-   }
+    function updateMasterColor() {
+       const hCoord = Math.round((appState.penHue / 360) * 4000);
+       const sCoord = Math.round(appState.penShade * 40);
+       appState.penColor = `hsl(${appState.penHue}, ${appState.penElectric || 100}%, ${appState.penShade}%)`;
+       
+       const bPrev = document.getElementById('brush-preview');
+       const cBtn = document.getElementById('btn-color');
+       
+       bPrev.style.backgroundColor = appState.penColor;
+       bPrev.style.width = bPrev.style.height = `${appState.penSize}px`;
+       
+       cBtn.innerText = `${hCoord}.${sCoord}`;
+       cBtn.style.color = appState.penColor;
+       cBtn.style.borderColor = appState.penColor;
+    }
 
-function toggleVault() {
-  document.getElementById('vault-system').classList.toggle('active');
-}
+    // QSAVE Pipeline
+    async function triggerQSave() {
+        if (appState.isRelaying) return;
+        appState.isRelaying = true;
 
-function saveToSlot(s) {
-  const data = {
-    img: mainCanvas.toDataURL(),
-    paths: state.pathHistory
-  };
-  localStorage.setItem('ARCH_S' + s, JSON.stringify(data));
-}
+        const qBtn = document.getElementById('btn-qsave');
+        const qBox = document.getElementById('box-qsave');
+        qBtn.classList.add('qsave-active');
+        if(qBox) qBox.classList.add('active-v');
 
-function loadFromSlot(s) {
-  const raw = localStorage.getItem('ARCH_S' + s);
-  if (!raw) return;
-  const data = JSON.parse(raw);
-  const img = new Image();
-  img.onload = () => {
-    mctx.clearRect(0, 0, mainCanvas.width / state.dpr, mainCanvas.height / state.dpr);
-    mctx.drawImage(img, 0, 0, mainCanvas.width / state.dpr, mainCanvas.height / state.dpr);
-    state.pathHistory = data.paths || [];
-  };
-  img.src = data.img;
-}
+        mctx.setTransform(1, 0, 0, 1, 0, 0); 
+        mctx.drawImage(temp, 0, 0);
+        mctx.scale(appState.dpr, appState.dpr); 
+        
+        appState.slot_vault = appState.slot_qsave;
+        appState.slot_qsave = main.toDataURL("image/png");
+        
+        document.getElementById('img-qsave-v').src = appState.slot_qsave;
+        if(appState.slot_vault) document.getElementById('img-save-v').src = appState.slot_vault;
 
-window.addEventListener('load', initialize);
-window.addEventListener('resize', initialize);
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', syncUI);
-  window.visualViewport.addEventListener('scroll', syncUI);
-}
-tempCanvas.addEventListener('touchstart', start, {passive: false});
-tempCanvas.addEventListener('touchmove', move, {passive: false});
-tempCanvas.addEventListener('touchend', end);
+        if (appState.slot_vault) {
+            bootToPhone(appState.slot_vault);
+        }
 
-for (let i = 0; i < 400; i++) {
-}
+        tctx.clearRect(0, 0, temp.width / appState.dpr, temp.height / appState.dpr);
+        
+        setTimeout(() => {
+            qBtn.classList.remove('qsave-active');
+            if(qBox) qBox.classList.remove('active-v');
+            appState.isRelaying = false;
+        }, 1200);
+    }
 
-console.log("ARCHITECT_SUBSTRATE_LOAD_COMPLETE");
-</script>
-</body>
-</html>
+    function bootToPhone(data) {
+        const link = document.createElement('a');
+        link.download = `${appState.projectName}_101.png`;
+        link.href = data;
+        link.click();
+    }
+
+    function focusVault(type) {
+        appState.focusedVault = type;
+        document.getElementById('box-qsave').classList.toggle('active-v', type === 'qsave');
+        document.getElementById('box-save').classList.toggle('active-v', type === 'save');
+        document.getElementById('v-del-btn').classList.remove('flash');
+    }
+
+    function vaultAction(action) {
+        const targetData = appState.focusedVault === 'qsave' ? appState.slot_qsave : appState.slot_vault;
+        if (!targetData && action !== 'DELETE') return;
+
+        if (action === 'EDIT') {
+            const img = new Image();
+            img.onload = () => {
+                tctx.clearRect(0,0, temp.width, temp.height);
+                tctx.drawImage(img, 0, 0, temp.width/appState.dpr, temp.height/appState.dpr);
+                toggleOverlay('vault'); // close it
+            };
+            img.src = targetData;
+        }
+
+        if (action === 'DELETE') {
+            const delBtn = document.getElementById('v-del-btn');
+            if (!delBtn.classList.contains('flash')) {
+                delBtn.classList.add('flash'); 
+            } else {
+                if(appState.focusedVault === 'qsave') {
+                    appState.slot_qsave = null;
+                    document.getElementById('img-qsave-v').src = "";
+                } else {
+                    appState.slot_vault = null;
+                    document.getElementById('img-save-v').src = "";
+                }
+                delBtn.classList.remove('flash');
+            }
+        }
+    }
+
+    function applyTool(name) {
+        appState.activeTool = name;
+        const btnMenu = document.getElementById('btn-menu');
+        btnMenu.innerText = name;
+        
+        // Hide the tools overlay and deactivate menu button visually
+        document.getElementById('overlay-tools').style.display = 'none';
+        document.getElementById('overlay-menu').style.display = 'none';
+        btnMenu.classList.remove('active');
+        appState.activeOverlay = null;
+    }
+
+    let colorTapTime = 0;
+    function handleColorTap() {
+        const now = Date.now();
+        // Check for double click
+        if (now - colorTapTime < 300) {
+            const hCoord = Math.round((appState.penHue / 360) * 4000);
+            const sCoord = Math.round(appState.penShade * 40);
+            const code = `${hCoord}.${sCoord}`;
+            
+            appState.ledger.unshift({ code: code, color: appState.penColor });
+            if (appState.ledger.length > 50) appState.ledger.pop();
+
+            const btn = document.getElementById('btn-color');
+            btn.style.boxShadow = '0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan)';
+            setTimeout(() => { btn.style.boxShadow = ''; }, 150);
+            setTimeout(() => { 
+                btn.style.boxShadow = '0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan)';
+                setTimeout(() => { btn.style.boxShadow = ''; }, 150);
+            }, 300);
+        } else {
+            // Single tap: open color overlay
+            toggleOverlay('color');
+        }
+        colorTapTime = now;
+    }
+
+    function setupLoupe(el, callback) {
+        let isDragging = false;
+        el.addEventListener('touchstart', (e) => { 
+            isDragging = true; 
+            e.stopPropagation(); 
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const rect = el.parentElement.getBoundingClientRect();
+            let percent = Math.max(0, Math.min(1, (e.touches[0].clientX - rect.left) / rect.width));
+            let snappedVal = Math.max(1, Math.min(4000, Math.round((percent * 4000) / appState.gear) * appState.gear));
+            el.style.left = `${(snappedVal / 4000) * 100}%`;
+            el.innerText = snappedVal;
+            callback(snappedVal);
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => { isDragging = false; });
+    }
+
+    setupLoupe(document.getElementById('loupe1'), (val) => {
+        if (appState.bar1Mode =
