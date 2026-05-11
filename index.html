@@ -462,4 +462,19 @@
     }
 
     setupLoupe(document.getElementById('loupe1'), (val) => {
-        if (appState.bar1Mode =
+        if (appState.bar1Mode === 'HUE') appState.penHue = (val/4000)*360; 
+        else appState.penShade = (val/4000)*100;
+        updateMasterColor();
+    });
+
+    setupLoupe(document.getElementById('loupe2'), (val) => {
+        if (appState.bar2Mode === 'ELECTRIC') appState.penElectric = (val/4000)*100; 
+        else appState.penSize = (val/4000)*100;
+        updateMasterColor();
+    });
+
+    window.addEventListener('load', init);
+    window.addEventListener('resize', init);
+</script>
+</body>
+</html>
